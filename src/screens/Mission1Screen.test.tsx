@@ -8,6 +8,15 @@ function getCharacterX() {
   return Number.parseFloat(character.style.left)
 }
 
+function getWeaponCount() {
+  return document.querySelectorAll('div[style*="background-color: red"]').length
+}
+
+function getWeaponY() {
+  const weapon = document.querySelector('div[style*="background-color: red"]') as HTMLElement
+  return Number.parseFloat(weapon.style.top)
+}
+
 describe('Mission1Screen', () => {
   it('Mission 1 타이틀과 캐릭터를 보여준다', () => {
     render(<Mission1Screen />)
@@ -73,5 +82,49 @@ describe('Mission1Screen', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 100))
     expect(getCharacterX()).toBe(stoppedX)
+  })
+
+  it('Space를 누르면 무기가 발사된다', async () => {
+    render(<Mission1Screen />)
+
+    fireEvent.keyDown(window, { key: ' ' })
+
+    await waitFor(() => expect(getWeaponCount()).toBe(1))
+
+    fireEvent.keyUp(window, { key: ' ' })
+  })
+
+  it('발사된 무기는 위쪽으로 이동한다', async () => {
+    render(<Mission1Screen />)
+
+    fireEvent.keyDown(window, { key: ' ' })
+    await waitFor(() => expect(getWeaponCount()).toBe(1))
+    const startY = getWeaponY()
+
+    await waitFor(() => expect(getWeaponY()).toBeLessThan(startY))
+
+    fireEvent.keyUp(window, { key: ' ' })
+  })
+
+  it('무기가 화면 상단에 도달하면 사라진다', async () => {
+    render(<Mission1Screen />)
+
+    fireEvent.keyDown(window, { key: ' ' })
+    await waitFor(() => expect(getWeaponCount()).toBe(1))
+    fireEvent.keyUp(window, { key: ' ' })
+
+    await waitFor(() => expect(getWeaponCount()).toBe(0), { timeout: 3000 })
+  })
+
+  it('Space를 누르고 있어도 프레임마다 여러 발이 발사되지 않는다', async () => {
+    render(<Mission1Screen />)
+
+    fireEvent.keyDown(window, { key: ' ' })
+    await waitFor(() => expect(getWeaponCount()).toBe(1))
+
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    expect(getWeaponCount()).toBe(1)
+
+    fireEvent.keyUp(window, { key: ' ' })
   })
 })
