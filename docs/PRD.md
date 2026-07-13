@@ -17,9 +17,11 @@
 
 ## 문서 구조
 
+- [`docs/PLAN.md`](./PLAN.md): Phase별 목표, 테스트 방법, 통과 기준
 - [`docs/FEATURE/main.md`](./FEATURE/main.md): 메인(시작) 화면 구성
 - [`docs/FEATURE/game_rule.md`](./FEATURE/game_rule.md): 캐릭터/풍선 물리, 분열, 클리어·실패 조건 등 상세 규칙
 - [`docs/FEATURE/mission1.md`](./FEATURE/mission1.md): Mission 1의 난이도 및 규칙
+- `docs/design/phaseN.md`: 각 Phase를 실제로 어떻게 구현할지에 대한 설계
 
 ## 범위
 
