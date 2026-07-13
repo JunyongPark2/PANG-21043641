@@ -14,3 +14,5 @@ export const INITIAL_BALLOON_COUNT = 2
 export const INITIAL_BALLOON_SPEED = 150 // px/sec
 export const SPLIT_BALLOON_SPEED = 200 // px/sec
 export const SPLIT_BALLOON_VY = -300 // px/sec (위 방향 초기 속도)
+
+export const TIME_LIMIT_SECONDS = 60

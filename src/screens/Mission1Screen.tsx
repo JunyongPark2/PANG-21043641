@@ -1,24 +1,38 @@
 import { useRef, useState } from 'react'
 import { createInitialBalloons, splitBalloon, updateBalloon } from '../game/balloonPhysics'
-import { isHit } from '../game/collision'
-import { CHARACTER_SPEED, CHARACTER_WIDTH, FIELD_HEIGHT, FIELD_WIDTH, INITIAL_BALLOON_COUNT, WEAPON_SPEED } from '../game/constants'
-import type { Balloon as BalloonType, Weapon as WeaponType } from '../game/types'
+import { isHit, isRectCircleHit } from '../game/collision'
+import {
+  CHARACTER_HEIGHT,
+  CHARACTER_SPEED,
+  CHARACTER_WIDTH,
+  FIELD_HEIGHT,
+  FIELD_WIDTH,
+  INITIAL_BALLOON_COUNT,
+  TIME_LIMIT_SECONDS,
+  WEAPON_SPEED,
+} from '../game/constants'
+import type { Balloon as BalloonType, MissionStatus, Weapon as WeaponType } from '../game/types'
 import { useGameLoop } from '../game/useGameLoop'
 import { useKeyboard } from '../game/useKeyboard'
 import Balloon from './Balloon'
 import Character from './Character'
+import ResultOverlay from './ResultOverlay'
 import Weapon from './Weapon'
 
 function Mission1Screen() {
   const [characterX, setCharacterX] = useState((FIELD_WIDTH - CHARACTER_WIDTH) / 2)
   const [weapons, setWeapons] = useState<WeaponType[]>([])
   const [balloons, setBalloons] = useState<BalloonType[]>(createInitialBalloons)
+  const [status, setStatus] = useState<MissionStatus>('playing')
+  const [remainingTime, setRemainingTime] = useState(TIME_LIMIT_SECONDS)
   const pressedKeys = useKeyboard()
   const nextWeaponId = useRef(0)
   const nextBalloonId = useRef(INITIAL_BALLOON_COUNT)
   const wasSpacePressed = useRef(false)
 
   useGameLoop((deltaTime) => {
+    if (status !== 'playing') return
+
     let direction = 0
     if (pressedKeys.current.has('ArrowLeft')) direction -= 1
     if (pressedKeys.current.has('ArrowRight')) direction += 1
@@ -78,6 +92,23 @@ function Mission1Screen() {
 
     setWeapons(nextWeapons)
     setBalloons(nextBalloons)
+
+    const nextRemainingTime = remainingTime - deltaTime
+    setRemainingTime(nextRemainingTime)
+
+    const characterRect = {
+      x: currentCharacterX,
+      y: FIELD_HEIGHT - CHARACTER_HEIGHT,
+      width: CHARACTER_WIDTH,
+      height: CHARACTER_HEIGHT,
+    }
+    const hitCharacter = nextBalloons.some((balloon) => isRectCircleHit(characterRect, balloon))
+
+    if (hitCharacter || nextRemainingTime <= 0) {
+      setStatus('failed')
+    } else if (nextBalloons.length === 0) {
+      setStatus('cleared')
+    }
   })
 
   return (
@@ -99,6 +130,7 @@ function Mission1Screen() {
         {balloons.map((balloon) => (
           <Balloon key={balloon.id} x={balloon.x} y={balloon.y} radius={balloon.radius} stage={balloon.stage} />
         ))}
+        {status !== 'playing' && <ResultOverlay status={status} />}
       </div>
     </div>
   )

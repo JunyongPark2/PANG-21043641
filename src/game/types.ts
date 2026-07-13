@@ -13,3 +13,5 @@ export type Balloon = {
   radius: number
   stage: number
 }
+
+export type MissionStatus = 'playing' | 'cleared' | 'failed'
