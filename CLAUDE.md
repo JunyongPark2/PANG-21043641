@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **React 19** + **TypeScript** + **Vite 8** (`@vitejs/plugin-react`, Oxc 기반)
 - **Oxlint**: ESLint 대신 사용하는 Rust 기반 린터 (`.oxlintrc.json`)
-- 별도의 테스트 프레임워크(Vitest/Jest 등)는 아직 설정되어 있지 않음
+- **Vitest** + **React Testing Library**: 컴포넌트 테스트 프레임워크 (`vite.config.ts`의 `test` 설정, `src/test/setup.ts`)
 
 ## 명령어
 
@@ -15,6 +15,7 @@ npm run dev      # 개발 서버 실행 (Vite)
 npm run build    # tsc -b (프로젝트 참조 기반 타입체크) 후 vite build
 npm run preview  # 빌드 결과물 로컬 미리보기
 npm run lint     # oxlint 실행
+npm run test     # vitest run (컴포넌트 테스트)
 ```
 
 타입 체크만 별도로 하려면:
@@ -24,7 +25,7 @@ npx tsc -b --noEmit
 
 ## 테스트 방법
 
-현재 테스트 프레임워크가 설치되어 있지 않다. 테스트를 추가할 경우 Vite 프로젝트이므로 Vitest 도입이 자연스러운 선택이며, 도입 전까지는 `npm run build`(타입 체크)와 `npm run lint`(Oxlint)로 코드 정합성을 확인한다.
+Vitest + React Testing Library로 컴포넌트 테스트를 작성한다. 테스트 파일은 대상 파일과 같은 위치에 `*.test.tsx`로 둔다 (예: `src/screens/MainScreen.test.tsx`). `npm run test`로 실행하며, `npm run build`(타입 체크)와 `npm run lint`(Oxlint)도 함께 확인한다.
 
 ## 아키텍처
 
