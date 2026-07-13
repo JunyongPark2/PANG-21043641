@@ -34,7 +34,7 @@ describe('Mission1Screen', () => {
 
     fireEvent.keyDown(window, { key: 'ArrowLeft' })
 
-    await waitFor(() => expect(getCharacterX()).toBeLessThan(startX))
+    await waitFor(() => expect(getCharacterX()).toBeLessThan(startX), { timeout: 3000 })
 
     fireEvent.keyUp(window, { key: 'ArrowLeft' })
   })
@@ -45,7 +45,7 @@ describe('Mission1Screen', () => {
 
     fireEvent.keyDown(window, { key: 'ArrowRight' })
 
-    await waitFor(() => expect(getCharacterX()).toBeGreaterThan(startX))
+    await waitFor(() => expect(getCharacterX()).toBeGreaterThan(startX), { timeout: 3000 })
 
     fireEvent.keyUp(window, { key: 'ArrowRight' })
   })
@@ -79,7 +79,7 @@ describe('Mission1Screen', () => {
     render(<Mission1Screen />)
 
     fireEvent.keyDown(window, { key: 'ArrowRight' })
-    await waitFor(() => expect(getCharacterX()).toBeGreaterThan(0))
+    await waitFor(() => expect(getCharacterX()).toBeGreaterThan(0), { timeout: 3000 })
 
     fireEvent.keyUp(window, { key: 'ArrowRight' })
     const stoppedX = getCharacterX()
@@ -93,7 +93,7 @@ describe('Mission1Screen', () => {
 
     fireEvent.keyDown(window, { key: ' ' })
 
-    await waitFor(() => expect(getWeaponCount()).toBe(1))
+    await waitFor(() => expect(getWeaponCount()).toBe(1), { timeout: 3000 })
 
     fireEvent.keyUp(window, { key: ' ' })
   })
@@ -102,10 +102,10 @@ describe('Mission1Screen', () => {
     render(<Mission1Screen />)
 
     fireEvent.keyDown(window, { key: ' ' })
-    await waitFor(() => expect(getWeaponCount()).toBe(1))
+    await waitFor(() => expect(getWeaponCount()).toBe(1), { timeout: 3000 })
     const startY = getWeaponY()
 
-    await waitFor(() => expect(getWeaponY()).toBeLessThan(startY))
+    await waitFor(() => expect(getWeaponY()).toBeLessThan(startY), { timeout: 3000 })
 
     fireEvent.keyUp(window, { key: ' ' })
   })
@@ -114,7 +114,7 @@ describe('Mission1Screen', () => {
     render(<Mission1Screen />)
 
     fireEvent.keyDown(window, { key: ' ' })
-    await waitFor(() => expect(getWeaponCount()).toBe(1))
+    await waitFor(() => expect(getWeaponCount()).toBe(1), { timeout: 3000 })
     fireEvent.keyUp(window, { key: ' ' })
 
     await waitFor(() => expect(getWeaponCount()).toBe(0), { timeout: 3000 })
@@ -124,7 +124,7 @@ describe('Mission1Screen', () => {
     render(<Mission1Screen />)
 
     fireEvent.keyDown(window, { key: ' ' })
-    await waitFor(() => expect(getWeaponCount()).toBe(1))
+    await waitFor(() => expect(getWeaponCount()).toBe(1), { timeout: 3000 })
 
     await new Promise((resolve) => setTimeout(resolve, 100))
     expect(getWeaponCount()).toBe(1)

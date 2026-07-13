@@ -1,15 +1,7 @@
 import { useRef, useState } from 'react'
-import {
-  CHARACTER_SPEED,
-  CHARACTER_WIDTH,
-  FIELD_HEIGHT,
-  FIELD_WIDTH,
-  GRAVITY,
-  INITIAL_BALLOON_COUNT,
-  INITIAL_BALLOON_SPEED,
-  STAGE_RADIUS,
-  WEAPON_SPEED,
-} from '../game/constants'
+import { createInitialBalloons, splitBalloon, updateBalloon } from '../game/balloonPhysics'
+import { isHit } from '../game/collision'
+import { CHARACTER_SPEED, CHARACTER_WIDTH, FIELD_HEIGHT, FIELD_WIDTH, INITIAL_BALLOON_COUNT, WEAPON_SPEED } from '../game/constants'
 import type { Balloon as BalloonType, Weapon as WeaponType } from '../game/types'
 import { useGameLoop } from '../game/useGameLoop'
 import { useKeyboard } from '../game/useKeyboard'
@@ -17,49 +9,13 @@ import Balloon from './Balloon'
 import Character from './Character'
 import Weapon from './Weapon'
 
-function createInitialBalloons(): BalloonType[] {
-  const radius = STAGE_RADIUS[0]
-  return Array.from({ length: INITIAL_BALLOON_COUNT }, (_, index) => ({
-    id: index,
-    x: ((index + 1) * FIELD_WIDTH) / (INITIAL_BALLOON_COUNT + 1),
-    y: radius * 2,
-    vx: index % 2 === 0 ? INITIAL_BALLOON_SPEED : -INITIAL_BALLOON_SPEED,
-    vy: 0,
-    radius,
-    stage: 0,
-  }))
-}
-
-function updateBalloon(balloon: BalloonType, deltaTime: number): BalloonType {
-  let { x, y, vx, vy } = balloon
-  const { radius } = balloon
-
-  vy += GRAVITY * deltaTime
-  x += vx * deltaTime
-  y += vy * deltaTime
-
-  if (x - radius < 0) {
-    x = radius
-    vx = -vx
-  } else if (x + radius > FIELD_WIDTH) {
-    x = FIELD_WIDTH - radius
-    vx = -vx
-  }
-
-  if (y + radius > FIELD_HEIGHT) {
-    y = FIELD_HEIGHT - radius
-    vy = -Math.abs(vy)
-  }
-
-  return { ...balloon, x, y, vx, vy }
-}
-
 function Mission1Screen() {
   const [characterX, setCharacterX] = useState((FIELD_WIDTH - CHARACTER_WIDTH) / 2)
   const [weapons, setWeapons] = useState<WeaponType[]>([])
   const [balloons, setBalloons] = useState<BalloonType[]>(createInitialBalloons)
   const pressedKeys = useKeyboard()
   const nextWeaponId = useRef(0)
+  const nextBalloonId = useRef(INITIAL_BALLOON_COUNT)
   const wasSpacePressed = useRef(false)
 
   useGameLoop((deltaTime) => {
@@ -80,26 +36,48 @@ function Mission1Screen() {
     const shouldFire = isSpacePressed && !wasSpacePressed.current
     wasSpacePressed.current = isSpacePressed
 
-    setWeapons((prev) => {
-      let next = prev
-        .map((weapon) => ({ ...weapon, y: weapon.y - WEAPON_SPEED * deltaTime }))
-        .filter((weapon) => weapon.y >= 0)
+    let nextWeapons = weapons
+      .map((weapon) => ({ ...weapon, y: weapon.y - WEAPON_SPEED * deltaTime }))
+      .filter((weapon) => weapon.y >= 0)
 
-      if (shouldFire) {
-        next = [
-          ...next,
-          {
-            id: nextWeaponId.current++,
-            x: currentCharacterX + CHARACTER_WIDTH / 2,
-            y: FIELD_HEIGHT - CHARACTER_WIDTH,
-          },
-        ]
+    if (shouldFire) {
+      nextWeapons = [
+        ...nextWeapons,
+        {
+          id: nextWeaponId.current++,
+          x: currentCharacterX + CHARACTER_WIDTH / 2,
+          y: FIELD_HEIGHT - CHARACTER_WIDTH,
+        },
+      ]
+    }
+
+    let nextBalloons = balloons.map((balloon) => updateBalloon(balloon, deltaTime))
+
+    const hitWeaponIds = new Set<number>()
+    const hitBalloonIds = new Set<number>()
+
+    for (const balloon of nextBalloons) {
+      if (hitBalloonIds.has(balloon.id)) continue
+      const weapon = nextWeapons.find((w) => !hitWeaponIds.has(w.id) && isHit(w, balloon))
+      if (weapon) {
+        hitWeaponIds.add(weapon.id)
+        hitBalloonIds.add(balloon.id)
       }
+    }
 
-      return next
-    })
+    if (hitBalloonIds.size > 0) {
+      nextWeapons = nextWeapons.filter((weapon) => !hitWeaponIds.has(weapon.id))
 
-    setBalloons((prev) => prev.map((balloon) => updateBalloon(balloon, deltaTime)))
+      const survivors = nextBalloons.filter((balloon) => !hitBalloonIds.has(balloon.id))
+      const spawned = nextBalloons
+        .filter((balloon) => hitBalloonIds.has(balloon.id))
+        .flatMap((balloon) => splitBalloon(balloon, () => nextBalloonId.current++))
+
+      nextBalloons = [...survivors, ...spawned]
+    }
+
+    setWeapons(nextWeapons)
+    setBalloons(nextBalloons)
   })
 
   return (
