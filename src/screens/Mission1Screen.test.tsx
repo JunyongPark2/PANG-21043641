@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import { CHARACTER_WIDTH, FIELD_WIDTH } from '../game/constants'
+import { CHARACTER_HEIGHT, CHARACTER_WIDTH, FIELD_HEIGHT, FIELD_WIDTH } from '../game/constants'
 
 // 캐릭터 이동/무기 발사 테스트는 풍선과의 충돌·클리어 판정(Phase 6)에 영향받지 않아야 하므로
 // 캐릭터 이동 경로(화면 하단)와 겹치지 않는 위치에 풍선을 고정해 둔다.
@@ -96,12 +96,13 @@ describe('Mission1Screen', () => {
     expect(getCharacterX()).toBe(stoppedX)
   })
 
-  it('Space를 누르면 무기가 발사된다', async () => {
+  it('Space를 누르면 캐릭터 상단에서 무기가 발사된다', async () => {
     render(<Mission1Screen onExitToMain={() => {}} />)
 
     fireEvent.keyDown(window, { key: ' ' })
 
     await waitFor(() => expect(getWeaponCount()).toBe(1), { timeout: 3000 })
+    expect(getWeaponY()).toBe(FIELD_HEIGHT - CHARACTER_HEIGHT)
 
     fireEvent.keyUp(window, { key: ' ' })
   })

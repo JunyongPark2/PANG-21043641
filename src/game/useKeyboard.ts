@@ -1,10 +1,13 @@
 import { useEffect, useRef } from 'react'
 
+const GAME_KEYS = new Set(['ArrowLeft', 'ArrowRight', ' '])
+
 export function useKeyboard() {
   const pressedKeys = useRef(new Set<string>())
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (GAME_KEYS.has(event.key)) event.preventDefault()
       pressedKeys.current.add(event.key)
     }
 

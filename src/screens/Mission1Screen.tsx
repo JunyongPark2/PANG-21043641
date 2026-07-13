@@ -1,8 +1,16 @@
 import { useRef, useState } from 'react'
 import { splitBalloon, updateBalloon } from '../game/balloonPhysics'
 import { isHit, isRectCircleHit } from '../game/collision'
+import {
+  CHARACTER_HEIGHT,
+  CHARACTER_SPEED,
+  CHARACTER_WIDTH,
+  FIELD_HEIGHT,
+  FIELD_WIDTH,
+  INITIAL_BALLOON_COUNT,
+  WEAPON_SPEED,
+} from '../game/constants'
 import { createInitialGameState } from '../game/createInitialGameState'
-import { CHARACTER_HEIGHT, CHARACTER_SPEED, CHARACTER_WIDTH, FIELD_HEIGHT, FIELD_WIDTH, INITIAL_BALLOON_COUNT, WEAPON_SPEED } from '../game/constants'
 import type { Balloon as BalloonType, MissionStatus, Weapon as WeaponType } from '../game/types'
 import { useGameLoop } from '../game/useGameLoop'
 import { useKeyboard } from '../game/useKeyboard'
@@ -71,7 +79,7 @@ function Mission1Screen({ onExitToMain }: Mission1ScreenProps) {
         {
           id: nextWeaponId.current++,
           x: currentCharacterX + CHARACTER_WIDTH / 2,
-          y: FIELD_HEIGHT - CHARACTER_WIDTH,
+          y: FIELD_HEIGHT - CHARACTER_HEIGHT,
         },
       ]
     }
