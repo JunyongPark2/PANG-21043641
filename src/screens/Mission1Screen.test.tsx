@@ -31,13 +31,13 @@ function getWeaponY() {
 
 describe('Mission1Screen', () => {
   it('Mission 1 타이틀과 캐릭터를 보여준다', () => {
-    render(<Mission1Screen />)
+    render(<Mission1Screen onExitToMain={() => {}} />)
 
     expect(screen.getByText('Mission 1')).toBeInTheDocument()
   })
 
   it('← 를 누르고 있으면 캐릭터가 왼쪽으로 이동한다', async () => {
-    render(<Mission1Screen />)
+    render(<Mission1Screen onExitToMain={() => {}} />)
     const startX = getCharacterX()
 
     fireEvent.keyDown(window, { key: 'ArrowLeft' })
@@ -48,7 +48,7 @@ describe('Mission1Screen', () => {
   })
 
   it('→ 를 누르고 있으면 캐릭터가 오른쪽으로 이동한다', async () => {
-    render(<Mission1Screen />)
+    render(<Mission1Screen onExitToMain={() => {}} />)
     const startX = getCharacterX()
 
     fireEvent.keyDown(window, { key: 'ArrowRight' })
@@ -59,7 +59,7 @@ describe('Mission1Screen', () => {
   })
 
   it('왼쪽 벽에 도달하면 더 이상 이동하지 않는다', async () => {
-    render(<Mission1Screen />)
+    render(<Mission1Screen onExitToMain={() => {}} />)
 
     fireEvent.keyDown(window, { key: 'ArrowLeft' })
 
@@ -73,7 +73,7 @@ describe('Mission1Screen', () => {
   })
 
   it('오른쪽 벽에 도달하면 더 이상 이동하지 않는다', async () => {
-    render(<Mission1Screen />)
+    render(<Mission1Screen onExitToMain={() => {}} />)
     const maxX = FIELD_WIDTH - CHARACTER_WIDTH
 
     fireEvent.keyDown(window, { key: 'ArrowRight' })
@@ -84,7 +84,7 @@ describe('Mission1Screen', () => {
   })
 
   it('키를 떼면 캐릭터가 즉시 멈춘다', async () => {
-    render(<Mission1Screen />)
+    render(<Mission1Screen onExitToMain={() => {}} />)
 
     fireEvent.keyDown(window, { key: 'ArrowRight' })
     await waitFor(() => expect(getCharacterX()).toBeGreaterThan(0), { timeout: 3000 })
@@ -97,7 +97,7 @@ describe('Mission1Screen', () => {
   })
 
   it('Space를 누르면 무기가 발사된다', async () => {
-    render(<Mission1Screen />)
+    render(<Mission1Screen onExitToMain={() => {}} />)
 
     fireEvent.keyDown(window, { key: ' ' })
 
@@ -107,7 +107,7 @@ describe('Mission1Screen', () => {
   })
 
   it('발사된 무기는 위쪽으로 이동한다', async () => {
-    render(<Mission1Screen />)
+    render(<Mission1Screen onExitToMain={() => {}} />)
 
     fireEvent.keyDown(window, { key: ' ' })
     await waitFor(() => expect(getWeaponCount()).toBe(1), { timeout: 3000 })
@@ -119,7 +119,7 @@ describe('Mission1Screen', () => {
   })
 
   it('무기가 화면 상단에 도달하면 사라진다', async () => {
-    render(<Mission1Screen />)
+    render(<Mission1Screen onExitToMain={() => {}} />)
 
     fireEvent.keyDown(window, { key: ' ' })
     await waitFor(() => expect(getWeaponCount()).toBe(1), { timeout: 3000 })
@@ -129,7 +129,7 @@ describe('Mission1Screen', () => {
   })
 
   it('Space를 누르고 있어도 프레임마다 여러 발이 발사되지 않는다', async () => {
-    render(<Mission1Screen />)
+    render(<Mission1Screen onExitToMain={() => {}} />)
 
     fireEvent.keyDown(window, { key: ' ' })
     await waitFor(() => expect(getWeaponCount()).toBe(1), { timeout: 3000 })

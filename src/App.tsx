@@ -8,9 +8,10 @@ function App() {
   const [screen, setScreen] = useState<Screen>('main')
 
   const goToMission1 = () => setScreen('mission1')
+  const goToMain = () => setScreen('main')
 
   if (screen === 'mission1') {
-    return <Mission1Screen />
+    return <Mission1Screen onExitToMain={goToMain} />
   }
 
   return <MainScreen onStart={goToMission1} />

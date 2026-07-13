@@ -1,16 +1,8 @@
 import { useRef, useState } from 'react'
-import { createInitialBalloons, splitBalloon, updateBalloon } from '../game/balloonPhysics'
+import { splitBalloon, updateBalloon } from '../game/balloonPhysics'
 import { isHit, isRectCircleHit } from '../game/collision'
-import {
-  CHARACTER_HEIGHT,
-  CHARACTER_SPEED,
-  CHARACTER_WIDTH,
-  FIELD_HEIGHT,
-  FIELD_WIDTH,
-  INITIAL_BALLOON_COUNT,
-  TIME_LIMIT_SECONDS,
-  WEAPON_SPEED,
-} from '../game/constants'
+import { createInitialGameState } from '../game/createInitialGameState'
+import { CHARACTER_HEIGHT, CHARACTER_SPEED, CHARACTER_WIDTH, FIELD_HEIGHT, FIELD_WIDTH, INITIAL_BALLOON_COUNT, WEAPON_SPEED } from '../game/constants'
 import type { Balloon as BalloonType, MissionStatus, Weapon as WeaponType } from '../game/types'
 import { useGameLoop } from '../game/useGameLoop'
 import { useKeyboard } from '../game/useKeyboard'
@@ -19,16 +11,35 @@ import Character from './Character'
 import ResultOverlay from './ResultOverlay'
 import Weapon from './Weapon'
 
-function Mission1Screen() {
-  const [characterX, setCharacterX] = useState((FIELD_WIDTH - CHARACTER_WIDTH) / 2)
-  const [weapons, setWeapons] = useState<WeaponType[]>([])
-  const [balloons, setBalloons] = useState<BalloonType[]>(createInitialBalloons)
-  const [status, setStatus] = useState<MissionStatus>('playing')
-  const [remainingTime, setRemainingTime] = useState(TIME_LIMIT_SECONDS)
+type Mission1ScreenProps = {
+  onExitToMain: () => void
+}
+
+function Mission1Screen({ onExitToMain }: Mission1ScreenProps) {
+  const initialState = useRef<ReturnType<typeof createInitialGameState>>(undefined)
+  if (!initialState.current) initialState.current = createInitialGameState()
+
+  const [characterX, setCharacterX] = useState(initialState.current.characterX)
+  const [weapons, setWeapons] = useState<WeaponType[]>(initialState.current.weapons)
+  const [balloons, setBalloons] = useState<BalloonType[]>(initialState.current.balloons)
+  const [status, setStatus] = useState<MissionStatus>(initialState.current.status)
+  const [remainingTime, setRemainingTime] = useState(initialState.current.remainingTime)
   const pressedKeys = useKeyboard()
   const nextWeaponId = useRef(0)
   const nextBalloonId = useRef(INITIAL_BALLOON_COUNT)
   const wasSpacePressed = useRef(false)
+
+  const restart = () => {
+    const initial = createInitialGameState()
+    setCharacterX(initial.characterX)
+    setWeapons(initial.weapons)
+    setBalloons(initial.balloons)
+    setStatus(initial.status)
+    setRemainingTime(initial.remainingTime)
+    nextWeaponId.current = 0
+    nextBalloonId.current = INITIAL_BALLOON_COUNT
+    wasSpacePressed.current = false
+  }
 
   useGameLoop((deltaTime) => {
     if (status !== 'playing') return
@@ -130,7 +141,7 @@ function Mission1Screen() {
         {balloons.map((balloon) => (
           <Balloon key={balloon.id} x={balloon.x} y={balloon.y} radius={balloon.radius} stage={balloon.stage} />
         ))}
-        {status !== 'playing' && <ResultOverlay status={status} />}
+        {status !== 'playing' && <ResultOverlay status={status} onRestart={restart} onExitToMain={onExitToMain} />}
       </div>
     </div>
   )

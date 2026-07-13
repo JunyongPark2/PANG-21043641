@@ -9,13 +9,13 @@ function getBalloonElements() {
 
 describe('Mission1Screen 풍선 물리', () => {
   it('풍선이 등장한다', () => {
-    render(<Mission1Screen />)
+    render(<Mission1Screen onExitToMain={() => {}} />)
 
     expect(getBalloonElements().length).toBe(INITIAL_BALLOON_COUNT)
   })
 
   it('풍선은 화면 밖으로 나가지 않고, 벽/바닥에서 튕긴다', async () => {
-    render(<Mission1Screen />)
+    render(<Mission1Screen onExitToMain={() => {}} />)
 
     for (let i = 0; i < 20; i++) {
       await new Promise((resolve) => setTimeout(resolve, 100))
@@ -34,7 +34,7 @@ describe('Mission1Screen 풍선 물리', () => {
   }, 10000)
 
   it('풍선은 시간이 지나도 멈추지 않고 계속 움직인다', async () => {
-    render(<Mission1Screen />)
+    render(<Mission1Screen onExitToMain={() => {}} />)
 
     const startPositions = getBalloonElements().map((el) => `${el.style.left},${el.style.top}`)
 

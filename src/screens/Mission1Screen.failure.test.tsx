@@ -24,7 +24,7 @@ const { default: Mission1Screen } = await import('./Mission1Screen')
 
 describe('Mission1Screen 캐릭터-풍선 충돌', () => {
   it('캐릭터가 풍선에 닿으면 FAILED가 표시된다', async () => {
-    render(<Mission1Screen />)
+    render(<Mission1Screen onExitToMain={() => {}} />)
 
     await waitFor(() => expect(screen.getByText('FAILED')).toBeInTheDocument())
   })

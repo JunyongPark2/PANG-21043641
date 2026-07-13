@@ -17,6 +17,9 @@ dist-ssr
 .env.*
 !.env.example
 
+# Playwright MCP artifacts
+.playwright-mcp
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
