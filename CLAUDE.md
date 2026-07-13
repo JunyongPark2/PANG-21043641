@@ -31,3 +31,12 @@ npx tsc -b --noEmit
 - `tsconfig.json`은 파일을 직접 포함하지 않고 `tsconfig.app.json`(앱 소스, `src/`)과 `tsconfig.node.json`(Vite 설정 등 Node 환경 파일)으로 프로젝트 참조(project references)만 분리되어 있다. TS 설정을 바꿀 때는 대상 범위(app vs node)에 맞는 파일을 수정해야 한다.
 - 엔트리 포인트: `index.html` → `src/main.tsx` → `src/App.tsx`. 현재 `App.tsx`는 별도 상태나 라우팅 없이 단일 컴포넌트로 구성된 최소 구조이다.
 - 전역 스타일은 `src/index.css` 하나로 관리되며, 컴포넌트 단위 CSS 파일은 아직 없다.
+
+## 게임 기획 문서
+
+이 프로젝트는 아케이드 게임 《팡(PANG)》을 웹으로 구현하는 것을 목표로 하며, 관련 기획 문서는 `docs/`에 정리되어 있다. 게임 로직을 구현하거나 수정하기 전에 아래 문서를 먼저 확인한다.
+
+- `docs/PRD.md`: 전체 개요 및 Mission 1 구현 범위
+- `docs/FEATURE/main.md`: 메인(시작) 화면 구성
+- `docs/FEATURE/game_rule.md`: 캐릭터 조작, 풍선 물리/분열, 클리어·실패 조건 등 게임 룰 상세
+- `docs/FEATURE/mission1.md`: Mission 1의 난이도 및 규칙
